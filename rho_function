@@ -1,0 +1,51 @@
+from collections import Counter
+import numpy as np
+
+def rho_calc(data,N,dx,Lx): 
+ #********************************************************************************
+ # - inds contains the index of the bin that each particle is inside of.         *
+ # - counter then calls the built-in Counter function, which counts the          *
+ #   frequency of each occurrence within the list inds.                          *
+ # - The inds -= 1 adjustment is necessary because inds indicates                *
+ #   which bin a particle belongs to, but Python uses zero-based indexing.       *
+ # - The rho_x list is normalized to represent the 2D particle density projected *
+ #   along the x-axis. The normalization accounts for the total number of        *
+ #   particles (Len), the bin width (dx), and the fact that the data reflects    *
+ #   particles in a 2D system with a domain height Ly.                           *
+ #********************************************************************************
+ bin_edges = np.arange(0,Lx+dx,dx)
+ Ly = 100.
+ Len = len(data)*Ly
+ inds = np.digitize(data, bin_edges,right = False); inds = inds.flatten(); inds -= 1;  
+ counter = Counter(inds)
+ rho_x = [counter[i]/(Len*dx) for i in range(len(bin_edges)-1)]
+ return bin_edges[0:-1], rho_x
+
+def rho_statistics(data,N,dx,Lx,l1,rangex): 
+ #********************************************************************************
+ # - inds contains the index of the bin that each particle is inside of.         *
+ # - counter then calls the built-in Counter function, which counts the          *
+ #   frequency of each occurrence within the list inds.                          *
+ # - The inds -= 1 adjustment is necessary because inds indicates                *
+ #   which bin a particle belongs to, but Python uses zero-based indexing.       *
+ #********************************************************************************
+ Length_of_data = len(data)
+ bin_edges = np.arange(0,Lx+dx,dx)
+ Ly = 100.
+ 
+ int_rhos = []
+ non_int_rhos = []
+ 
+ for t in range(Length_of_data):
+  inds = np.digitize(data[t], bin_edges,right = False); inds -= 1;  
+  counter = Counter(inds)
+  counts_int = [counter[i] for i in range(len(bin_edges)-1) if l1 < bin_edges[i] <= l1 + rangex]
+  counts_non_int = [counter[i] for i in range(len(bin_edges)-1) if bin_edges[i] <= 0.5*rangex or bin_edges[i] > bin_edges[-1] - 0.5*rangex] 
+  min_length = min(len(counts_int), len(counts_non_int))
+
+  counts_int = counts_int[:min_length]
+  counts_non_int = counts_non_int[:min_length]
+
+  int_rhos.append(np.mean(counts_int)*dx/Ly)
+  non_int_rhos.append(np.mean(counts_non_int)*dx/Ly)   
+ return np.mean(int_rhos), np.mean(non_int_rhos), np.std(int_rhos), np.std(non_int_rhos)
