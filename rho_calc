@@ -1,6 +1,7 @@
 from collections import Counter
 import numpy as np
 
+
 def rho_calc(data,N,dx,Lx): 
  #********************************************************************************
  # - inds contains the index of the bin that each particle is inside of.         *
