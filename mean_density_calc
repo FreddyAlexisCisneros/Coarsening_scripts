@@ -1,3 +1,8 @@
-def mean_density_computer(x_vals,y_vals,x_min,x_max):
+#************************************************************************
+# This function calculates the average density between x_min and x_max, *
+# given a list of x-values and their corresponding y-values.            *
+#************************************************************************
+
+def avg_density_computer(x_vals,y_vals,x_min,x_max):
  rhos = [y_vals[i] for i in range(len(x_vals)) if x_min < x_vals[i] <= x_max]
  return np.mean(rhos)
